@@ -64,28 +64,14 @@ public class Canmovetishi : MonoBehaviour {
 	}
 	//把传入进来的可走位置全部画出来
 	public void GetPrefabs(int [,]position,int c,int d,int x,int y){//得到相关位置的item坐标  tox  toy
-	//先进行与社体清空
-	//	for (int i=1; i<=90; i++) {
-		//	GameObject obj = GameObject.Find("prefabs"+i.ToString());
-		//	Destroy(obj);
-		//}
-		/*string str = "";
-		for(int t=0;t<board.chess.GetLength(0);t++){
-			for(int f=0;f<board.chess.GetLength(1);f++)
-				str+=" "+board.chess[t,f];
-			str+="\n";
-		}
-		print (str);*/
 		if (!rules.KingBye (position, c, d, x, y))
-			//print(!rules.KingBye(position,c,d,x,y));
-//			print (c + "," + d + "-" + x + "," + y);
 			return;
-			int wid = x * 130;
-		int heit = y * (-128);
+			int wid = x * 195;
+		int heit = y * (-192);
 
 		for (int i=1; i<=90; i++) {
 			GameObject game = GameObject.Find("item"+i.ToString());
-			if(game.transform.localPosition.x==wid&&game.transform.localPosition.y==heit){
+			if(game.transform.localPosition.x+263==wid&&game.transform.localPosition.y - 302 == heit){
 				//得到了game  对象    了解game对象坐标 
 				GameObject obj = GameObject.Find("Chess");//找到预设体参照物
 				GameObject ite;
@@ -96,7 +82,7 @@ public class Canmovetishi : MonoBehaviour {
 				ite.transform.parent = obj.transform;
 				GameObject b = GameObject.Find(ite.name);    //找到这个预设体的名字，给他做一些操作
 				b.name = "prefabs"+i.ToString();
-				b.transform.localPosition = new Vector3(wid,heit,0);
+				b.transform.localPosition = new Vector3(wid-263,heit+302,0);
 				b.transform.localScale = new Vector3(1,1,1);
 				GameObject objecta = GameObject.Find(b.name);
 			}

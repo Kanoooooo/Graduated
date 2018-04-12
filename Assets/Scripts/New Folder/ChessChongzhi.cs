@@ -65,8 +65,8 @@ public class ChessChongzhi : MonoBehaviour {
 		string s3="";
 		for (int i=1; i<=90; i++) {
 			obj = GameObject.Find("item"+i.ToString());
-			int x=System.Convert.ToInt32((obj.transform.localPosition.x)/130);
-			int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y)/128));
+			int x=System.Convert.ToInt32((obj.transform.localPosition.x+263)/195);
+			int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y-302)/192));
 			if(x==tox&&y==toy)
 				s3=obj.name;
 		}
@@ -79,8 +79,8 @@ public class ChessChongzhi : MonoBehaviour {
 		string s3="";
 		for (int i=1; i<=90; i++) {
 			obj = GameObject.Find("item"+i.ToString());
-			int x=System.Convert.ToInt32((obj.transform.localPosition.x)/130);
-			int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y)/128));
+			int x=System.Convert.ToInt32((obj.transform.localPosition.x+263)/195);
+			int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y-302)/192));
 			if(x==fromx&&y==fromy)
 				s3=obj.name;
 		}

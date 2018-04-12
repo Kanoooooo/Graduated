@@ -82,8 +82,8 @@ public class blackclick : MonoBehaviour {
 		BlackNameOrRedName (obj);//是否点击到棋子  如果是  就得到棋子
 		if (obj.name.Substring (0, 1) != "i")
 			obj = obj.gameObject.transform.parent.gameObject;//得到他的父容器
-		int x=System.Convert.ToInt32((obj.transform.localPosition.x)/130);
-		int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y)/128));
+		int x=System.Convert.ToInt32((obj.transform.localPosition.x+263)/195);
+		int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y - 302) /192));
 		int Result = IsBlackOrRed (x, y);//判断点击到了什么
 		switch (Result) {
 		case 0://点击到了空  是否要走棋

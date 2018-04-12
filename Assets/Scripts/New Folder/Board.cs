@@ -33,11 +33,11 @@ public class Board : MonoBehaviour {
             GameObject b = GameObject.Find(ite.name);    //找到这个预设体的名字，给他做一些操作
             b.transform.localScale = new Vector3(1, 1, 1);
             b.name = "item" + i.ToString();                                           //suoyou所有的深度 都是5
-            b.transform.localPosition = new Vector3(xx, yy, 0);
-            xx += 130;
-            if (xx >= 1170)
+            b.transform.localPosition = new Vector3(xx-263, yy+302, 0);
+            xx += 195;
+            if (xx >= 1755)
             {
-                yy -= 128;
+                yy -= 192;
                 xx = 0;
             }
         }
@@ -87,8 +87,8 @@ public class Board : MonoBehaviour {
         {
             GameObject obj = GameObject.Find("item" + i.ToString());
             //	All.Add(obj);
-            int x = System.Convert.ToInt32((obj.transform.localPosition.x) / 130);
-            int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y) / 128));
+            int x = System.Convert.ToInt32((obj.transform.localPosition.x+263) / 195);
+            int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y-302) / 192));
             switch (chess[y, x])
             {
                 case 1:
