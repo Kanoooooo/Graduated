@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class HeadManager : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+    GameObject DontDes;
+
+    // Use this for initialization
+    void Start () {
         //设置默认头像
         SpriteRenderer m_srSR = gameObject.GetComponent<SpriteRenderer>();
         Texture2D img = Resources.Load("1521968928188") as Texture2D;
@@ -13,10 +15,13 @@ public class HeadManager : MonoBehaviour {
         m_srSR.sprite = sp;
 
         //设置自定义头像
-        GameObject DontDes = GameObject.Find("DontDestroyOnLoad");
+        DontDes = GameObject.Find("DontDestroyOnLoad");
         if(DontDes!=null)
         {
+            GameObject name = GameObject.Find("Name");
+            UILabel uil = name.GetComponent<UILabel>();
             SpriteRenderer SR = DontDes.GetComponentInChildren<SpriteRenderer>();
+            uil.text = SR.gameObject.name;
             if (SR != null)
             {
                 m_srSR.sprite = SR.sprite;
@@ -25,8 +30,4 @@ public class HeadManager : MonoBehaviour {
 
     }
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }
