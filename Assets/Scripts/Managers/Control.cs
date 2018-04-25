@@ -38,7 +38,10 @@ public class Control : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-
+        //设置默认图片
+        Texture2D img = Resources.Load("1521968928188") as Texture2D;
+        Sprite sp = Sprite.Create(img, new Rect(0, 0, img.width, img.height), new Vector2(0.0f, 0.0f));
+        m_srSpriteRenderer.sprite = sp;
         //转场不销毁图片
         //第一次进入场景，设置物体不销毁
         if (!bIsDestoryAchieve)

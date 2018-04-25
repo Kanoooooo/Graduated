@@ -3,15 +3,7 @@ using System.Collections;
 
 public class KingPosition : MonoBehaviour {
 	public static int Jiang_x,Jiang_y,Shuai_x,Shuai_y;
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
 	public static  void IsPosition(){//得到将和帅的坐标
 		for (int i=0; i<3; i++)
 			for (int j=3; j<6; j++)
@@ -31,12 +23,12 @@ public class KingPosition : MonoBehaviour {
 		IsPosition ();
 		if (Board.chess [Jiang_y, Jiang_x] != 1) {
 //			blackclick.CanMove = false;
-			blackclick.str = "红色棋子胜利";
+			blackclick.str = "红色方胜利";
 			blackclick.TrueOrFalse = false;
 			return;
 		} else if (Board.chess [Shuai_y, Shuai_x] != 8) {
 	//		blackclick.CanMove = false;
-			blackclick.str="黑色棋子胜利";
+			blackclick.str="黑色方胜利";
 			blackclick.TrueOrFalse= false;
 			return ;
 		}
@@ -44,50 +36,63 @@ public class KingPosition : MonoBehaviour {
 		for (int i=0; i<9; i++) {
 			for(int j=0;j<10;j++){
 				switch(Board.chess[j,i]){
-				case 2:
-					BOL= rules.IsValidMove(Board.chess,i,j,Shuai_x,Shuai_y);
-					if(BOL)
-						blackclick.str ="帅被車将军了";
-				
-					break;
-				case 3:
-					BOL= rules.IsValidMove(Board.chess,i,j,Shuai_x,Shuai_y);
-					if(BOL)
-						blackclick.str ="帅被马将军了";
-					break;
-				case 4:
-					BOL= rules.IsValidMove(Board.chess,i,j,Shuai_x,Shuai_y);
-					if(BOL)
-						blackclick.str ="帅被炮将军了";
-					break;
-			
-				case 7:
-					BOL= rules.IsValidMove(Board.chess,i,j,Shuai_x,Shuai_y);
-					if(BOL)
-						blackclick.str ="帅被兵将军了";
-					break;
-				case 9:
-					BOL= rules.IsValidMove(Board.chess,i,j,Jiang_x,Jiang_y);
-					if(BOL)
-						blackclick.str ="将被車将军了";
-					break;
-				case 10:
-					BOL= rules.IsValidMove(Board.chess,i,j,Jiang_x,Jiang_y);
-					if(BOL)
-						blackclick.str ="将被马将军了";
-					break;
-				case 11:
-					BOL= rules.IsValidMove(Board.chess,i,j,Jiang_x,Jiang_y);
-					if(BOL)
-						blackclick.str ="将被炮将军了";
-					break;
-				case 14:
-					BOL= rules.IsValidMove(Board.chess,i,j,Jiang_x,Jiang_y);
-					if(BOL)
-						blackclick.str ="将被兵将军了";
-					break;
-				}
-			}
+                    //没有考虑同时被多个棋子将军
+                    //case 2:
+                    //	BOL= rules.IsValidMove(Board.chess,i,j,Shuai_x,Shuai_y);
+                    //	if(BOL)
+                    //		blackclick.str ="帅被車将军了";
+                    //	break;
+                    //case 3:
+                    //	BOL= rules.IsValidMove(Board.chess,i,j,Shuai_x,Shuai_y);
+                    //	if(BOL)
+                    //		blackclick.str ="帅被马将军了";
+                    //	break;
+                    //case 4:
+                    //	BOL= rules.IsValidMove(Board.chess,i,j,Shuai_x,Shuai_y);
+                    //	if(BOL)
+                    //		blackclick.str ="帅被炮将军了";
+                    //	break;
+
+                    //case 7:
+                    //	BOL= rules.IsValidMove(Board.chess,i,j,Shuai_x,Shuai_y);
+                    //	if(BOL)
+                    //		blackclick.str ="帅被兵将军了";
+                    //	break;
+                    //case 9:
+                    //	BOL= rules.IsValidMove(Board.chess,i,j,Jiang_x,Jiang_y);
+                    //	if(BOL)
+                    //		blackclick.str ="将被車将军了";
+                    //	break;
+                    //case 10:
+                    //	BOL= rules.IsValidMove(Board.chess,i,j,Jiang_x,Jiang_y);
+                    //	if(BOL)
+                    //		blackclick.str ="将被马将军了";
+                    //	break;
+                    //case 11:
+                    //	BOL= rules.IsValidMove(Board.chess,i,j,Jiang_x,Jiang_y);
+                    //	if(BOL)
+                    //		blackclick.str ="将被炮将军了";
+                    //	break;
+                    //case 14:
+                    //	BOL= rules.IsValidMove(Board.chess,i,j,Jiang_x,Jiang_y);
+                    //	if(BOL)
+                    //		blackclick.str ="将被兵将军了";
+                    //	break;
+
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 7:
+                    case 9:
+                    case 10:
+                    case 11:
+                    case 14:
+                        BOL = rules.IsValidMove(Board.chess, i, j, Jiang_x, Jiang_y);
+                        if (BOL)
+                            blackclick.str = "将军";
+                        break;
+                }
+        }
 		}
 
 	}

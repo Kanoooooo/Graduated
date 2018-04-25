@@ -3,15 +3,6 @@ using System.Collections;
 
 public class Canmovetishi : MonoBehaviour {
 	Blackmove IsChess = new Blackmove();
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
 	//点击棋子能判断得出来他的那些位置是能走的呢？
 
@@ -84,7 +75,7 @@ public class Canmovetishi : MonoBehaviour {
 				b.name = "prefabs"+i.ToString();
 				b.transform.localPosition = new Vector3(wid-263,heit+302,0);
 				b.transform.localScale = new Vector3(1,1,1);
-				GameObject objecta = GameObject.Find(b.name);
+				//GameObject objecta = GameObject.Find(b.name);
 			}
 		}
 	}

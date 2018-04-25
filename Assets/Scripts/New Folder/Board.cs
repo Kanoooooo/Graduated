@@ -22,10 +22,10 @@ public class Board : MonoBehaviour {
     
     public void text()
     {                                  //动态添加了90个sprite 并且给它们位置等信息
-        UIAtlas atlas;
+        //UIAtlas atlas;
         int xx = 0, yy = 0;
         GameObject a = GameObject.Find("Chess");
-        atlas = Resources.Load("") as UIAtlas;   //让他不能找到图片集合
+        //atlas = Resources.Load("") as UIAtlas;   //让他不能找到图片集合
         for (int i = 1; i <= 90; i++)
         {
             GameObject ite = (GameObject)Instantiate(Resources.Load("item"));//找到预设体
@@ -49,10 +49,10 @@ public class Board : MonoBehaviour {
         /// 
         GameObject a = (GameObject)Instantiate(Resources.Load(sql));
         a.transform.parent = game.transform;
-        GameObject b = GameObject.Find(a.name);
-        b.name = name + count.ToString();
-        b.transform.localPosition = new Vector3(0, 0, 0);
-        b.transform.localScale = new Vector3(1, 1, 1);
+        //GameObject b = GameObject.Find(a.name);
+        a.name = name + count.ToString();
+        a.transform.localPosition = new Vector3(0, 0, 0);
+        a.transform.localScale = new Vector3(1, 1, 1);
     }
 
     public void chessposition()
@@ -69,18 +69,11 @@ public class Board : MonoBehaviour {
             {0,0,0,0,0,0,0,0,0},
             {9,10,13,12,8,12,13,10,9}
         };
-        //初始化其他对象
-        //blackclick.ChessMove = true;
-        //blackclick.str = "红方走";
-        //blackclick.TrueOrFalse = true;
         if (start == false)
         {
             return;
         }
-        //ChessChongzhi.Count = 0;//重置悔棋记录对象
-        //ChessChongzhi.pos = new ChessChongzhi.QIZI[400];
         start = false;
-        //All = new ArrayList ();//初始化
         text();
         int count = 1;
         for (int i = 1; i <= 90; i++)

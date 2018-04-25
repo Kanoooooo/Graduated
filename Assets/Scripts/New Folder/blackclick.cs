@@ -5,15 +5,14 @@ public class blackclick : MonoBehaviour {
 	public static int FromX=-1, ToX=-1, ToY=-1, FromY=-1;
 	public static GameObject ObjBlack=null,ObjRed=null;//红色对象，和黑色对象
 	public UILabel Lab;
-	public static bool bdfdd = true;//测试
 	public static string str="红方走";
 	public static bool ChessMove =true;//true   redMove   false BlackMove
 	public static bool TrueOrFalse=true;//判断这个时候输赢状态能否走棋  //重新开始记得该true
 	public static string RedName=null,BlackName=null,ItemName;//blackchessname  and   redchessname
 	rules re = new rules ();
 
-	public UIToggle tog;
-	public Blackmove.CHESSMOVE chere;
+	//public UIToggle tog;
+	//public Blackmove.CHESSMOVE chere;
 	Canmovetishi can = new Canmovetishi();
 // Use this for initialization
 	//控制窗口，不让窗口乱动

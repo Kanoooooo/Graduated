@@ -1,12 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 public class rules : MonoBehaviour {
-	void Start () {
 
-	}
-	// Update is called once per frame
-	void Update () {
-	}
 	//让王不能会面
 	public static bool Isblack(int x){
 		if (x > 0 && x < 8)
