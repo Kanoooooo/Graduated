@@ -9,18 +9,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
-    public UILabel lab;
-    public UILabel lab2;
-    public static string label = "null";
-
-    public static void ChangeText(int i)
-    {
-        label = i.ToString();
-    }
-    private void Update()
-    {
-        lab.text = label;
-    }
+    public UILabel uil;
 
     public static string nickname;
 
@@ -32,47 +21,36 @@ public class GameManager : MonoBehaviour {
     // getInt("client-index") == 1 为黑方
     public static string userColor;
 
-	// 是否游戏结束
-    public static bool isOver;
 
     void Awake() {
         curTurn = "Red";
     }
 
 	void Start() {
-		isOver = false;
+
 
 	}
 
 	// 
 	public void updateChess() {
 
-		// 检查胜负
-		if(!blackclick.TrueOrFalse) {
-            if(blackclick.str == "红色棋子胜利")
-			//Debug.Log ("游戏结束，获胜方：" + turn);
+        // 检查胜负
+        if (blackclick.str == "红色方胜利"|| blackclick.str == "黑色方胜利")
+        {
+            // 结果通知给对方
+            Hashtable values = new Hashtable();
+            values.Add("name", "lose");
+            values.Add("v", (byte)1);
+            GobangClient.send(GameSerialize.toBytes(values));
+            // UI
+            GameObject ui = GameObject.Find("UI");
+            GameObject resultObj = ui.transform.Find("Result").gameObject;
+            GameObject gameoverObj = resultObj.transform.Find("GameOver").gameObject;
+            gameoverObj.GetComponentInChildren<Text>().text = "完胜";
 
-			// game over
-			isOver = true;
-			// 结果通知给对方
-			{
-				Hashtable values = new Hashtable ();
-				values.Add ("name", "lose");
-				values.Add ("v", (byte) 1);
-
-				GobangClient.send (GameSerialize.toBytes (values));
-			}
-
-			// UI
-			GameObject ui = GameObject.Find("UI");
-
-			GameObject resultObj = ui.transform.Find ("Result").gameObject;
-			GameObject gameoverObj = resultObj.transform.Find ("GameOver").gameObject;
-			gameoverObj.GetComponentInChildren<Text> () .text = "大获全胜";
-
-			resultObj.SetActive(true);
-		}
-	}
+            resultObj.SetActive(true);
+        }
+    }
 
 	// 接收到消息
 	public void recvMessage(Hashtable values, byte fromIndex) {
@@ -88,24 +66,28 @@ public class GameManager : MonoBehaviour {
 				else
 					theChess = "黑方";
 
-				GameObject ui = GameObject.Find ("UI");
-				GameObject userInfoObj = ui.transform.Find ("UserInfo").gameObject;
-				GameObject adversaryObj = userInfoObj.transform.Find ("Adversary").gameObject;
-				adversaryObj.GetComponent<Text> ().text = "对手: " + values["v"] + " (" + theChess + ")";
-
-				userInfoObj.SetActive (true);
+                GameObject Enemy = GameObject.Find("EnemyName");
+                UILabel label = Enemy.GetComponent<UILabel>();
+                label.text = values["v"] + " (" + theChess + ")";
 			}
 			break;
 
 		// 落子
 		case "piece":
 			{
+                int Regame = (int)values["Regame"];
 				int FromX = (int) values["FromX"];
 				int FromY = (int) values["FromY"];
                 int ToX = (int)values["ToX"];
                 int ToY = (int)values["ToY"];
                 string Move = (string) values["Move"];
                 string YidongOrChizi = (string)values["YidongOrChizi"];
+                    if(Regame == 1)
+                    {
+                        GameObject start = GameObject.Find("Start") as GameObject;
+                        ReGame RG = start.GetComponent<ReGame>();
+                        RG.ChessPostion();
+                    }
                     // 渲染接收到的数据，落子
                     if (YidongOrChizi == "Yidong")
                     {
@@ -115,13 +97,9 @@ public class GameManager : MonoBehaviour {
                         int a = Board.chess[FromY, FromX];
                         int b = Board.chess[ToY, ToX];
                         chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
-                        lab.text = firstChess.name ;
                         IsMove(firstChess.name, item2, FromX, FromY, ToX, ToY);
                         blackclick.ChessMove = !blackclick.ChessMove;
-                        if (blackclick.str == "红方走")
-                            blackclick.str = "黑方走";
-                        else
-                            blackclick.str = "红方走";
+                        blackclick.str = Move;
                         // 落子后，切换回合
                         if (GameManager.curTurn == "Red")
                         {
@@ -144,10 +122,7 @@ public class GameManager : MonoBehaviour {
                         //看看是否能播放音乐
                         IsEat(firstChess.name, secondChess.name, FromX, FromY, ToX, ToY);
                         blackclick.ChessMove = !blackclick.ChessMove;
-                        if (blackclick.str == "红方走")
-                            blackclick.str = "黑方走";
-                        else
-                            blackclick.str = "红方走";
+                        blackclick.str = Move;
                         // 落子后，切换回合
                         if (GameManager.curTurn == "Red")
                         {
@@ -165,18 +140,17 @@ public class GameManager : MonoBehaviour {
 		// gameover
 		case "lose":
 			{
-				// gameover
-				isOver = true;
+                // gameover
+                blackclick.TrueOrFalse = false;
 
 				// UI
 				GameObject ui = GameObject.Find("UI");
 
 				GameObject resultObj = ui.transform.Find ("Result").gameObject;
 				GameObject gameoverObj = resultObj.transform.Find ("GameOver").gameObject;
-				gameoverObj.GetComponentInChildren<Text> () .text = "不幸惨败";
-
-				resultObj.SetActive(true);
-			}
+				gameoverObj.GetComponentInChildren<Text> () .text = "惜败";
+                resultObj.SetActive(true);
+                }
 			break;
 
 		default:

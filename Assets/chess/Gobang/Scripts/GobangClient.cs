@@ -48,12 +48,9 @@ public class GobangClient : NanoClient {
 			else
 				chess = "黑方";
 
-			GameObject ui = GameObject.Find ("UI");
-			GameObject userInfoObj = ui.transform.Find ("UserInfo").gameObject;
-			GameObject selfObj = userInfoObj.transform.Find ("Self").gameObject;
-			selfObj.GetComponent<Text> ().text = "本人: " + GameManager.nickname + " (" + chess + ")";
-
-			userInfoObj.SetActive (true);
+            GameObject Player = GameObject.Find("PlayerName");
+            UILabel label = Player.GetComponent<UILabel>();
+            label.text = GameManager.nickname + " (" + chess + ")";
 		}
 	}
 
@@ -90,7 +87,7 @@ public class GobangClient : NanoClient {
 
 		// 断开连接 重新reload 当前关卡
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-	}
+    }
 
 	// 输出调试信息
 	public void drawGUI () {
@@ -99,7 +96,7 @@ public class GobangClient : NanoClient {
 			return;
 
 		GUIStyle guiStyle = new GUIStyle ();
-		guiStyle.normal.textColor = Color.black;
+		guiStyle.normal.textColor = Color.white;
 		guiStyle.fontSize = 32;
 
 		// 延迟 us->ms

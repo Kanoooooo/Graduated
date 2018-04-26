@@ -25,12 +25,26 @@ public class KingPosition : MonoBehaviour {
 //			blackclick.CanMove = false;
 			blackclick.str = "红色方胜利";
 			blackclick.TrueOrFalse = false;
+            //联机模式下发送信息
+            if(blackclick.bIsOnline)
+            {
+                GameObject game = GameObject.Find("Game") as GameObject;
+                GameManager GM = game.GetComponent<GameManager>();
+                GM.updateChess();
+            }
 			return;
 		} else if (Board.chess [Shuai_y, Shuai_x] != 8) {
 	//		blackclick.CanMove = false;
 			blackclick.str="黑色方胜利";
 			blackclick.TrueOrFalse= false;
-			return ;
+            //联机模式下发送信息
+            if (blackclick.bIsOnline)
+            {
+                GameObject game = GameObject.Find("Game") as GameObject;
+                GameManager GM = game.GetComponent<GameManager>();
+                GM.updateChess();
+            }
+            return ;
 		}
 		bool BOL;//bool 值
 		for (int i=0; i<9; i++) {

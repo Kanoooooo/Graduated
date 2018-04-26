@@ -65,36 +65,6 @@ public class blackclick : MonoBehaviour {
 		parent1.transform.localPosition = Vector3.zero;
         Board.chess [y2, x2] = Board.chess[y1,x1];
         Board.chess [y1, x1] = 0;
-        YidongOrChizi = "Yidong";
-
-        if ((GameManager.curTurn == GameManager.userColor) && !GameManager.isOver)
-        {
-            // 发送消息通知对手，落子位置
-            {
-                Hashtable values = new Hashtable();
-                values.Add("name", "piece");
-                values.Add("FromX", x1);
-                values.Add("FromY", y1);
-                values.Add("ToX", x2);
-                values.Add("ToY", y2);
-                values.Add("Move", str);
-                values.Add("YidongOrChizi", YidongOrChizi);
-
-                GobangClient.send(GameSerialize.toBytes(values));
-            }
-            //检查游戏是否结束
-            Game.updateChess();
-            // 落子后，切换回合
-            if (GameManager.curTurn == "Red")
-            {
-                GameManager.curTurn = "Black";
-            }
-            else
-            {
-                GameManager.curTurn = "Red";
-            }
-        }
-
     }
 	//吃子类
 	public void IsEat(string Frist,string sconde,int x1,int y1,int x2,int y2){
@@ -110,36 +80,6 @@ public class blackclick : MonoBehaviour {
 		GameObject a = GameObject.Find ("xiaoshi");
 		Twoname.transform.parent = a.transform;
 		Twoname.transform.localPosition = new Vector3(5000,5000,0);
-        YidongOrChizi = "Chizi";
-
-        if ((GameManager.curTurn == GameManager.userColor) && !GameManager.isOver)
-        {
-            // 发送消息通知对手，落子位置
-            {
-                Hashtable values = new Hashtable();
-                values.Add("name", "piece");
-                values.Add("FromX", x1);
-                values.Add("FromY", y1);
-                values.Add("ToX", x2);
-                values.Add("ToY", y2);
-                values.Add("Move", str);
-                values.Add("YidongOrChizi", YidongOrChizi);
-
-                GobangClient.send(GameSerialize.toBytes(values));
-            }
-            //检查游戏是否结束
-            Game.updateChess();
-            // 落子后，切换回合
-            if (GameManager.curTurn == "Red")
-            {
-                GameManager.curTurn = "Black";
-            }
-            else
-            {
-                GameManager.curTurn = "Red";
-            }
-        }
-
     }
 	//用来悔棋功能
 	//点击事件
@@ -180,8 +120,8 @@ public class blackclick : MonoBehaviour {
                         int a = Board.chess[FromY, FromX];
                         int b = Board.chess[ToY, ToX];
                         chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
-                        IsMove(RedName, obj, FromX, FromY, ToX, ToY);//走了
                         str = "黑方走";
+                        IsMove(RedName, obj, FromX, FromY, ToX, ToY);//走了
                         KingPosition.JiangJunCheck();
                         ChessMove = false;
                         //getString();
@@ -203,11 +143,10 @@ public class blackclick : MonoBehaviour {
                         int a = Board.chess[FromY, FromX];
                         int b = Board.chess[ToY, ToX];
                         chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
-                        //看看是否能播放音乐
+                        str = "红方走";
                         IsMove(BlackName, obj, FromX, FromY, ToX, ToY);
                         //黑色走棋
                         ChessMove = true;
-                        str = "红方走";
                         KingPosition.JiangJunCheck();
                     }
                     break;
@@ -299,7 +238,7 @@ public class blackclick : MonoBehaviour {
         {
             if (!GobangClient.isConnected())
                 return;
-            if ((GameManager.curTurn == GameManager.userColor) && !GameManager.isOver)
+            if ((GameManager.curTurn == GameManager.userColor) && TrueOrFalse)
             {
 
                 GameObject obj = UICamera.hoveredObject;
@@ -309,7 +248,6 @@ public class blackclick : MonoBehaviour {
                 int x = System.Convert.ToInt32((obj.transform.localPosition.x + 263) / 195);
                 int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y - 302) / 192));
                 int Result = IsBlackOrRed(x, y);//判断点击到了什么
-                GameManager.ChangeText(Result);
                 switch (Result)
                 {
                     case 0://点击到了空  是否要走棋
@@ -333,8 +271,8 @@ public class blackclick : MonoBehaviour {
                             int a = Board.chess[FromY, FromX];
                             int b = Board.chess[ToY, ToX];
                             chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
-                            IsMove(RedName, obj, FromX, FromY, ToX, ToY);//走了
                             str = "黑方走";
+                            IsMove(RedName, obj, FromX, FromY, ToX, ToY);//走了
                             KingPosition.JiangJunCheck();
                             ChessMove = false;
                             //getString();
@@ -342,6 +280,7 @@ public class blackclick : MonoBehaviour {
                                 return;//因为没有携程关系  每次进入黑色走棋的时候都判断 棋局是否结束
                             BlackName = null;
                             RedName = null;
+                            SendMoveMessage(FromX, FromY, ToX, ToY);
                             return;
                             //执行走棋
                         }
@@ -356,12 +295,12 @@ public class blackclick : MonoBehaviour {
                             int a = Board.chess[FromY, FromX];
                             int b = Board.chess[ToY, ToX];
                             chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
-                            //看看是否能播放音乐
+                            str = "红方走";
                             IsMove(BlackName, obj, FromX, FromY, ToX, ToY);
                             //黑色走棋
                             ChessMove = true;
-                            str = "红方走";
                             KingPosition.JiangJunCheck();
+                            SendMoveMessage(FromX, FromY, ToX, ToY);
                         }
                         break;
                     case 1://点击到了黑色  是否选中  还是  红色要吃子
@@ -393,16 +332,16 @@ public class blackclick : MonoBehaviour {
                             int a = Board.chess[FromY, FromX];
                             int b = Board.chess[ToY, ToX];
                             chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
-                            //看看是否能播放音乐
-                            IsEat(RedName, BlackName, FromX, FromY, ToX, ToY);
-                            ChessMove = false;
                             //红色吃子  变黑色走
                             str = "黑方走";
+                            IsEat(RedName, BlackName, FromX, FromY, ToX, ToY);
+                            ChessMove = false;
                             KingPosition.JiangJunCheck();
                             if (str == "红色棋子胜利")
                                 return;//因为没有携程关系  每次进入黑色走棋的时候都判断 棋局是否结束
                             RedName = null;
                             BlackName = null;
+                            SendEatMessage(FromX, FromY, ToX, ToY);
                             return;
                         }
                         break;
@@ -436,13 +375,13 @@ public class blackclick : MonoBehaviour {
                             int a = Board.chess[FromY, FromX];
                             int b = Board.chess[ToY, ToX];
                             chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
-                            //看看是否能播放音乐
+                            str = "红方走";
                             IsEat(BlackName, RedName, FromX, FromY, ToX, ToY);
                             RedName = null;
                             BlackName = null;
                             ChessMove = true;
-                            str = "红方走";
                             KingPosition.JiangJunCheck();
+                            SendEatMessage(FromX, FromY, ToX, ToY);
                         }
                         break;
 
@@ -451,4 +390,72 @@ public class blackclick : MonoBehaviour {
         }
 	
 	}
+
+    public void SendEatMessage(int x1, int y1, int x2, int y2)
+    {
+        YidongOrChizi = "Chizi";
+        if ((GameManager.curTurn == GameManager.userColor) && TrueOrFalse)
+        {
+            // 发送消息通知对手，落子位置
+            {
+                KingPosition.JiangJunCheck();
+                Hashtable values = new Hashtable();
+                values.Add("name", "piece");
+                values.Add("FromX", x1);
+                values.Add("FromY", y1);
+                values.Add("ToX", x2);
+                values.Add("ToY", y2);
+                values.Add("Move", str);
+                values.Add("YidongOrChizi", YidongOrChizi);
+                values.Add("Regame", 0);
+
+                GobangClient.send(GameSerialize.toBytes(values));
+            }
+            //检查游戏是否结束
+            Game.updateChess();
+            // 落子后，切换回合
+            if (GameManager.curTurn == "Red")
+            {
+                GameManager.curTurn = "Black";
+            }
+            else
+            {
+                GameManager.curTurn = "Red";
+            }
+        }
+    }
+    public void SendMoveMessage(int x1, int y1, int x2, int y2)
+    {
+        YidongOrChizi = "Yidong";
+        if ((GameManager.curTurn == GameManager.userColor) && TrueOrFalse)
+        {
+            // 发送消息通知对手，落子位置
+            {
+                KingPosition.JiangJunCheck();
+                Hashtable values = new Hashtable();
+                values.Add("name", "piece");
+                values.Add("FromX", x1);
+                values.Add("FromY", y1);
+                values.Add("ToX", x2);
+                values.Add("ToY", y2);
+                values.Add("Move", str);
+                values.Add("YidongOrChizi", YidongOrChizi);
+                values.Add("Regame", 0);
+
+                GobangClient.send(GameSerialize.toBytes(values));
+            }
+            //检查游戏是否结束
+            Game.updateChess();
+            // 落子后，切换回合
+            if (GameManager.curTurn == "Red")
+            {
+                GameManager.curTurn = "Black";
+            }
+            else
+            {
+                GameManager.curTurn = "Red";
+            }
+        }
+
+    }
 }

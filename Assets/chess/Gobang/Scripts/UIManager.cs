@@ -50,7 +50,6 @@ public class UIManager : MonoBehaviour {
     void FixedUpdate () {
 		if(myClient != null)
 			myClient.doUpdate ();
-
         //联机成功布置棋盘一次
         if (NanoClient.isConnected()&&!bChessPos)
         {
@@ -61,18 +60,18 @@ public class UIManager : MonoBehaviour {
 	}
 
 	void OnGUI () {
-		if(myClient != null)
-			myClient.drawGUI ();
+		//if(myClient != null)
+			//myClient.drawGUI ();
 	}
 
 	public void onButtonClick(string name) {
 		if(name == "")
 			return;
 
-		switch (name) {
+        GameObject mainObj = ui.transform.Find("Main").gameObject;
+        switch (name) {
 		case "level":
 			// 昵称不能为空
-			GameObject mainObj = ui.transform.Find ("Main").gameObject;
 			GameObject textObj = mainObj.transform.Find ("InputField/Text").gameObject;
 			GameObject errorTipObj = mainObj.transform.Find ("ErrorTip").gameObject;
 			string nickname = textObj.GetComponent<Text> ().text;
@@ -94,8 +93,25 @@ public class UIManager : MonoBehaviour {
 			break;
 
 		case "retry":
-			GobangClient.disconnect ();
-			break;
+                //GobangClient.disconnect ();
+                GameObject start = GameObject.Find("Start") as GameObject;
+                ReGame RG = start.GetComponent<ReGame>();
+                RG.ChessPostion();
+                // 结果通知给对方
+                Hashtable values = new Hashtable();
+                values.Add("name", "piece");
+                values.Add("FromX", -1);
+                values.Add("FromY", -1);
+                values.Add("ToX", -1);
+                values.Add("ToY", -1);
+                values.Add("Move", "红方走");
+                values.Add("YidongOrChizi", "Yidong");
+                values.Add("Regame", 1);
+                GobangClient.send(GameSerialize.toBytes(values));
+                GameObject resultObj = ui.transform.Find("Result").gameObject;
+
+                resultObj.SetActive(false);
+                break;
 
 		}
 	}
