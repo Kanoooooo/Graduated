@@ -107,6 +107,7 @@ public class UIManager : MonoBehaviour {
                 values.Add("Move", "红方走");
                 values.Add("YidongOrChizi", "Yidong");
                 values.Add("Regame", 1);
+                values.Add("GoBack", 0);
                 GobangClient.send(GameSerialize.toBytes(values));
                 GameObject resultObj = ui.transform.Find("Result").gameObject;
 

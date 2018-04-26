@@ -19,7 +19,7 @@ public class GameSerialize : MonoBehaviour {
 			break;
 
 		case "piece":
-			nanoWriter.putInt (CMD_PIECE).putInt ((int) values ["FromX"]).putInt((int)values["FromY"]).putInt((int)values["ToX"]).putInt((int)values["ToY"]).putString ((string) values ["Move"]).putString((string)values["YidongOrChizi"]).putInt((int)values["Regame"]);
+			nanoWriter.putInt (CMD_PIECE).putInt ((int) values ["FromX"]).putInt((int)values["FromY"]).putInt((int)values["ToX"]).putInt((int)values["ToY"]).putString ((string) values ["Move"]).putString((string)values["YidongOrChizi"]).putInt((int)values["Regame"]).putInt((int)values["GoBack"]);
 			break;
 
 		case "lose":
@@ -61,6 +61,7 @@ public class GameSerialize : MonoBehaviour {
             string Move;
             string YidongOrChizi;
             int Regame;
+            int GoBack;
 			nanoReader.getInt (out FromX);
 			nanoReader.getInt (out FromY);
             nanoReader.getInt(out ToX);
@@ -68,6 +69,7 @@ public class GameSerialize : MonoBehaviour {
             nanoReader.getString (out Move);
             nanoReader.getString(out YidongOrChizi);
             nanoReader.getInt(out Regame);
+            nanoReader.getInt(out GoBack);
 
             values.Add ("name", "piece");
 			values.Add ("FromX", FromX);
@@ -77,8 +79,9 @@ public class GameSerialize : MonoBehaviour {
             values.Add ("Move", Move);
             values.Add("YidongOrChizi", YidongOrChizi);
             values.Add("Regame", Regame);
+            values.Add("GoBack", GoBack);
 
-			break;
+            break;
 
 		case CMD_LOSE:
 			{

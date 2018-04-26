@@ -9,7 +9,11 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
-    public UILabel uil;
+    //申请悔棋按钮
+    public GameObject GoBackButton;
+    public GameObject GoBackText;
+    //悔棋脚本
+    public ChessChongzhi CC;
 
     public static string nickname;
 
@@ -82,11 +86,39 @@ public class GameManager : MonoBehaviour {
                 int ToY = (int)values["ToY"];
                 string Move = (string) values["Move"];
                 string YidongOrChizi = (string)values["YidongOrChizi"];
+                int GoBack = (int)values["GoBack"];
+                    //再来一局
                     if(Regame == 1)
                     {
                         GameObject start = GameObject.Find("Start") as GameObject;
                         ReGame RG = start.GetComponent<ReGame>();
                         RG.ChessPostion();
+                        return;
+                    }
+                    //申请悔棋
+                    if(GoBack == 0)
+                    {
+                        GoBackText.SetActive(false);
+                    }
+                    if(GoBack == 1)
+                    {
+                        GoBackButton.SetActive(true);
+                        return;
+                    }
+                    if (GoBack == 2)
+                    {
+                        // 悔棋后，切换回合
+                        if (GameManager.curTurn == "Red")
+                        {
+                            GameManager.curTurn = "Black";
+                        }
+                        else
+                        {
+                            GameManager.curTurn = "Red";
+                        }
+                        GoBackText.SetActive(false);
+                        CC.IloveHUIQI();
+                        return;
                     }
                     // 渲染接收到的数据，落子
                     if (YidongOrChizi == "Yidong")
@@ -119,7 +151,6 @@ public class GameManager : MonoBehaviour {
                         int a = Board.chess[FromY, FromX];
                         int b = Board.chess[ToY, ToX];
                         chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
-                        //看看是否能播放音乐
                         IsEat(firstChess.name, secondChess.name, FromX, FromY, ToX, ToY);
                         blackclick.ChessMove = !blackclick.ChessMove;
                         blackclick.str = Move;

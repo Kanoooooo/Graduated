@@ -408,6 +408,7 @@ public class blackclick : MonoBehaviour {
                 values.Add("Move", str);
                 values.Add("YidongOrChizi", YidongOrChizi);
                 values.Add("Regame", 0);
+                values.Add("GoBack", 0);
 
                 GobangClient.send(GameSerialize.toBytes(values));
             }
@@ -441,6 +442,7 @@ public class blackclick : MonoBehaviour {
                 values.Add("Move", str);
                 values.Add("YidongOrChizi", YidongOrChizi);
                 values.Add("Regame", 0);
+                values.Add("GoBack", 0);
 
                 GobangClient.send(GameSerialize.toBytes(values));
             }
