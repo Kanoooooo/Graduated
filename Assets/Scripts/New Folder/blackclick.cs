@@ -9,15 +9,26 @@ public class blackclick : MonoBehaviour {
 	public static bool ChessMove =true;//true   redMove   false BlackMove
 	public static bool TrueOrFalse=true;//判断这个时候输赢状态能否走棋  //重新开始记得该true
 	public static string RedName=null,BlackName=null,ItemName;//blackchessname  and   redchessname
+    public static string YidongOrChizi;
 	rules re = new rules ();
 
-	//public UIToggle tog;
-	//public Blackmove.CHESSMOVE chere;
-	Canmovetishi can = new Canmovetishi();
-// Use this for initialization
-	//控制窗口，不让窗口乱动
+    public static bool bIsOnline = true;//是否为联机状态
+    GameManager Game;
 
-	void Start () {
+    //public UIToggle tog;
+    //public Blackmove.CHESSMOVE chere;
+    Canmovetishi can = new Canmovetishi();
+    // Use this for initialization
+    //控制窗口，不让窗口乱动
+
+    private void Awake()
+    {
+        //获得gamemanager
+        GameObject obj = GameObject.Find("Game") as GameObject;
+        Game = obj.GetComponent<GameManager>();
+    }
+
+    void Start () {
 		GameObject obj = GameObject.Find("tishi");
 		Lab= obj.GetComponent<UILabel> ();
 		}
@@ -54,7 +65,37 @@ public class blackclick : MonoBehaviour {
 		parent1.transform.localPosition = Vector3.zero;
         Board.chess [y2, x2] = Board.chess[y1,x1];
         Board.chess [y1, x1] = 0;
-	}
+        YidongOrChizi = "Yidong";
+
+        if ((GameManager.curTurn == GameManager.userColor) && !GameManager.isOver)
+        {
+            // 发送消息通知对手，落子位置
+            {
+                Hashtable values = new Hashtable();
+                values.Add("name", "piece");
+                values.Add("FromX", x1);
+                values.Add("FromY", y1);
+                values.Add("ToX", x2);
+                values.Add("ToY", y2);
+                values.Add("Move", str);
+                values.Add("YidongOrChizi", YidongOrChizi);
+
+                GobangClient.send(GameSerialize.toBytes(values));
+            }
+            //检查游戏是否结束
+            Game.updateChess();
+            // 落子后，切换回合
+            if (GameManager.curTurn == "Red")
+            {
+                GameManager.curTurn = "Black";
+            }
+            else
+            {
+                GameManager.curTurn = "Red";
+            }
+        }
+
+    }
 	//吃子类
 	public void IsEat(string Frist,string sconde,int x1,int y1,int x2,int y2){
 	GameObject Onename = GameObject.Find (Frist);//得到第一个
@@ -69,7 +110,37 @@ public class blackclick : MonoBehaviour {
 		GameObject a = GameObject.Find ("xiaoshi");
 		Twoname.transform.parent = a.transform;
 		Twoname.transform.localPosition = new Vector3(5000,5000,0);
-	}
+        YidongOrChizi = "Chizi";
+
+        if ((GameManager.curTurn == GameManager.userColor) && !GameManager.isOver)
+        {
+            // 发送消息通知对手，落子位置
+            {
+                Hashtable values = new Hashtable();
+                values.Add("name", "piece");
+                values.Add("FromX", x1);
+                values.Add("FromY", y1);
+                values.Add("ToX", x2);
+                values.Add("ToY", y2);
+                values.Add("Move", str);
+                values.Add("YidongOrChizi", YidongOrChizi);
+
+                GobangClient.send(GameSerialize.toBytes(values));
+            }
+            //检查游戏是否结束
+            Game.updateChess();
+            // 落子后，切换回合
+            if (GameManager.curTurn == "Red")
+            {
+                GameManager.curTurn = "Black";
+            }
+            else
+            {
+                GameManager.curTurn = "Red";
+            }
+        }
+
+    }
 	//用来悔棋功能
 	//点击事件
 	//播放音乐
@@ -77,143 +148,307 @@ public class blackclick : MonoBehaviour {
 	public void IsClickCheck(){	
 		if (TrueOrFalse == false)
 			return;
-		GameObject obj = UICamera.hoveredObject;
-		BlackNameOrRedName (obj);//是否点击到棋子  如果是  就得到棋子
-		if (obj.name.Substring (0, 1) != "i")
-			obj = obj.gameObject.transform.parent.gameObject;//得到他的父容器
-		int x=System.Convert.ToInt32((obj.transform.localPosition.x+263)/195);
-		int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y - 302) /192));
-		int Result = IsBlackOrRed (x, y);//判断点击到了什么
-		switch (Result) {
-		case 0://点击到了空  是否要走棋
-            //如果点击到了空格  就把对象清空
-            for (int i = 1; i <= 90; i++)
+        if(!bIsOnline)
+        {
+            GameObject obj = UICamera.hoveredObject;
+            BlackNameOrRedName(obj);//是否点击到棋子  如果是  就得到棋子
+            if (obj.name.Substring(0, 1) != "i")
+                obj = obj.gameObject.transform.parent.gameObject;//得到他的父容器
+            int x = System.Convert.ToInt32((obj.transform.localPosition.x + 263) / 195);
+            int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y - 302) / 192));
+            int Result = IsBlackOrRed(x, y);//判断点击到了什么
+            switch (Result)
             {
-                GameObject Clear = GameObject.Find("prefabs" + i.ToString());
-                Destroy(Clear);
-            }
-            ToY = y;
-			ToX = x;
-			if(ChessMove){//红色走
-				if(RedName == null)
-					return;
-				string sssRed = RedName;//记录红色棋子的名字
-			bool ba = rules.IsValidMove(Board.chess,FromX,FromY,ToX,ToY);
-			if(!ba)
-					return;
+                case 0://点击到了空  是否要走棋
+                       //如果点击到了空格  就把对象清空
+                    for (int i = 1; i <= 90; i++)
+                    {
+                        GameObject Clear = GameObject.Find("prefabs" + i.ToString());
+                        Destroy(Clear);
+                    }
+                    ToY = y;
+                    ToX = x;
+                    if (ChessMove)
+                    {//红色走
+                        if (RedName == null)
+                            return;
+                        string sssRed = RedName;//记录红色棋子的名字
+                        bool ba = rules.IsValidMove(Board.chess, FromX, FromY, ToX, ToY);
+                        if (!ba)
+                            return;
 
-				int a = Board.chess[FromY,FromX];
-				int b = Board.chess[ToY,ToX];
-				chzh.AddChess(ChessChongzhi.Count,FromX,FromY,ToX,ToY,true,a,b);
-				IsMove(RedName,obj,FromX,FromY,ToX,ToY);//走了
-				str = "黑方走";
-				KingPosition.JiangJunCheck();
-				ChessMove = false;
-				//getString();
-				if(str=="红色棋子胜利")
-					return ;//因为没有携程关系  每次进入黑色走棋的时候都判断 棋局是否结束
-				BlackName = null;
-				RedName = null;
-				return;
-			//执行走棋
-			}
-			else{//黑色走
-				if(BlackName==null)
-					return;
-				bool ba = rules.IsValidMove(Board.chess,FromX,FromY,ToX,ToY);
-				if(!ba)
-					return;
-				//ChessChongzhi chzh = new ChessChongzhi();
-				int a = Board.chess[FromY,FromX];
-				int b = Board.chess[ToY,ToX];
-				chzh.AddChess(ChessChongzhi.Count,FromX,FromY,ToX,ToY,true,a,b);
-				//看看是否能播放音乐
-				IsMove(BlackName,obj,FromX,FromY,ToX,ToY);
-				//黑色走棋
-				ChessMove = true;
-				str="红方走";
-				KingPosition.JiangJunCheck();
-			}
-			break;
-		case 1://点击到了黑色  是否选中  还是  红色要吃子
-			if(!ChessMove){
-				FromX = x;
-				FromY = y;
-                for (int i = 1; i <= 90; i++)
+                        int a = Board.chess[FromY, FromX];
+                        int b = Board.chess[ToY, ToX];
+                        chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
+                        IsMove(RedName, obj, FromX, FromY, ToX, ToY);//走了
+                        str = "黑方走";
+                        KingPosition.JiangJunCheck();
+                        ChessMove = false;
+                        //getString();
+                        if (str == "红色棋子胜利")
+                            return;//因为没有携程关系  每次进入黑色走棋的时候都判断 棋局是否结束
+                        BlackName = null;
+                        RedName = null;
+                        return;
+                        //执行走棋
+                    }
+                    else
+                    {//黑色走
+                        if (BlackName == null)
+                            return;
+                        bool ba = rules.IsValidMove(Board.chess, FromX, FromY, ToX, ToY);
+                        if (!ba)
+                            return;
+                        //ChessChongzhi chzh = new ChessChongzhi();
+                        int a = Board.chess[FromY, FromX];
+                        int b = Board.chess[ToY, ToX];
+                        chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
+                        //看看是否能播放音乐
+                        IsMove(BlackName, obj, FromX, FromY, ToX, ToY);
+                        //黑色走棋
+                        ChessMove = true;
+                        str = "红方走";
+                        KingPosition.JiangJunCheck();
+                    }
+                    break;
+                case 1://点击到了黑色  是否选中  还是  红色要吃子
+                    if (!ChessMove)
+                    {
+                        FromX = x;
+                        FromY = y;
+                        for (int i = 1; i <= 90; i++)
+                        {
+                            GameObject Clear = GameObject.Find("prefabs" + i.ToString());
+                            Destroy(Clear);
+                        }
+                        can.ClickChess(FromX, FromY);
+                    }
+                    else
+                    {
+                        for (int i = 1; i <= 90; i++)
+                        {
+                            GameObject Clear = GameObject.Find("prefabs" + i.ToString());
+                            Destroy(Clear);
+                        }
+                        if (RedName == null)
+                            return;
+                        ToX = x;
+                        ToY = y;
+                        bool ba = rules.IsValidMove(Board.chess, FromX, FromY, ToX, ToY);
+                        if (!ba)
+                            return;
+                        int a = Board.chess[FromY, FromX];
+                        int b = Board.chess[ToY, ToX];
+                        chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
+                        //看看是否能播放音乐
+                        IsEat(RedName, BlackName, FromX, FromY, ToX, ToY);
+                        ChessMove = false;
+                        //红色吃子  变黑色走
+                        str = "黑方走";
+                        KingPosition.JiangJunCheck();
+                        if (str == "红色棋子胜利")
+                            return;//因为没有携程关系  每次进入黑色走棋的时候都判断 棋局是否结束
+                        RedName = null;
+                        BlackName = null;
+                        return;
+                    }
+                    break;
+                case 2://点击到了红色   是否选中  还是黑色要吃子
+                    if (ChessMove)
+                    {
+                        FromX = x;
+                        FromY = y;
+                        for (int i = 1; i <= 90; i++)
+                        {
+                            GameObject Clear = GameObject.Find("prefabs" + i.ToString());
+                            Destroy(Clear);
+                        }
+                        can.ClickChess(FromX, FromY);
+                    }
+                    else
+                    {
+                        for (int i = 1; i <= 90; i++)
+                        {
+                            GameObject Clear = GameObject.Find("prefabs" + i.ToString());
+                            Destroy(Clear);
+                        }
+                        if (BlackName == null)
+                            return;
+                        ToX = x;
+                        ToY = y;
+                        bool ba = rules.IsValidMove(Board.chess, FromX, FromY, ToX, ToY);
+                        if (!ba)
+                            return;
+                        //ChessChongzhi chzh = new ChessChongzhi();
+                        int a = Board.chess[FromY, FromX];
+                        int b = Board.chess[ToY, ToX];
+                        chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
+                        //看看是否能播放音乐
+                        IsEat(BlackName, RedName, FromX, FromY, ToX, ToY);
+                        RedName = null;
+                        BlackName = null;
+                        ChessMove = true;
+                        str = "红方走";
+                        KingPosition.JiangJunCheck();
+                    }
+                    break;
+
+            }
+        }
+	    else
+        {
+            if (!GobangClient.isConnected())
+                return;
+            if ((GameManager.curTurn == GameManager.userColor) && !GameManager.isOver)
+            {
+
+                GameObject obj = UICamera.hoveredObject;
+                BlackNameOrRedName(obj);//是否点击到棋子  如果是  就得到棋子
+                if (obj.name.Substring(0, 1) != "i")
+                    obj = obj.gameObject.transform.parent.gameObject;//得到他的父容器
+                int x = System.Convert.ToInt32((obj.transform.localPosition.x + 263) / 195);
+                int y = System.Convert.ToInt32(Mathf.Abs((obj.transform.localPosition.y - 302) / 192));
+                int Result = IsBlackOrRed(x, y);//判断点击到了什么
+                GameManager.ChangeText(Result);
+                switch (Result)
                 {
-                    GameObject Clear = GameObject.Find("prefabs" + i.ToString());
-                    Destroy(Clear);
+                    case 0://点击到了空  是否要走棋
+                           //如果点击到了空格  就把对象清空
+                        for (int i = 1; i <= 90; i++)
+                        {
+                            GameObject Clear = GameObject.Find("prefabs" + i.ToString());
+                            Destroy(Clear);
+                        }
+                        ToY = y;
+                        ToX = x;
+                        if (ChessMove)
+                        {//红色走
+                            if (RedName == null)
+                                return;
+                            string sssRed = RedName;//记录红色棋子的名字
+                            bool ba = rules.IsValidMove(Board.chess, FromX, FromY, ToX, ToY);
+                            if (!ba)
+                                return;
+
+                            int a = Board.chess[FromY, FromX];
+                            int b = Board.chess[ToY, ToX];
+                            chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
+                            IsMove(RedName, obj, FromX, FromY, ToX, ToY);//走了
+                            str = "黑方走";
+                            KingPosition.JiangJunCheck();
+                            ChessMove = false;
+                            //getString();
+                            if (str == "红色棋子胜利")
+                                return;//因为没有携程关系  每次进入黑色走棋的时候都判断 棋局是否结束
+                            BlackName = null;
+                            RedName = null;
+                            return;
+                            //执行走棋
+                        }
+                        else
+                        {//黑色走
+                            if (BlackName == null)
+                                return;
+                            bool ba = rules.IsValidMove(Board.chess, FromX, FromY, ToX, ToY);
+                            if (!ba)
+                                return;
+                            //ChessChongzhi chzh = new ChessChongzhi();
+                            int a = Board.chess[FromY, FromX];
+                            int b = Board.chess[ToY, ToX];
+                            chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
+                            //看看是否能播放音乐
+                            IsMove(BlackName, obj, FromX, FromY, ToX, ToY);
+                            //黑色走棋
+                            ChessMove = true;
+                            str = "红方走";
+                            KingPosition.JiangJunCheck();
+                        }
+                        break;
+                    case 1://点击到了黑色  是否选中  还是  红色要吃子
+                        if (!ChessMove)
+                        {
+                            FromX = x;
+                            FromY = y;
+                            for (int i = 1; i <= 90; i++)
+                            {
+                                GameObject Clear = GameObject.Find("prefabs" + i.ToString());
+                                Destroy(Clear);
+                            }
+                            can.ClickChess(FromX, FromY);
+                        }
+                        else
+                        {
+                            for (int i = 1; i <= 90; i++)
+                            {
+                                GameObject Clear = GameObject.Find("prefabs" + i.ToString());
+                                Destroy(Clear);
+                            }
+                            if (RedName == null)
+                                return;
+                            ToX = x;
+                            ToY = y;
+                            bool ba = rules.IsValidMove(Board.chess, FromX, FromY, ToX, ToY);
+                            if (!ba)
+                                return;
+                            int a = Board.chess[FromY, FromX];
+                            int b = Board.chess[ToY, ToX];
+                            chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
+                            //看看是否能播放音乐
+                            IsEat(RedName, BlackName, FromX, FromY, ToX, ToY);
+                            ChessMove = false;
+                            //红色吃子  变黑色走
+                            str = "黑方走";
+                            KingPosition.JiangJunCheck();
+                            if (str == "红色棋子胜利")
+                                return;//因为没有携程关系  每次进入黑色走棋的时候都判断 棋局是否结束
+                            RedName = null;
+                            BlackName = null;
+                            return;
+                        }
+                        break;
+                    case 2://点击到了红色   是否选中  还是黑色要吃子
+                        if (ChessMove)
+                        {
+                            FromX = x;
+                            FromY = y;
+                            for (int i = 1; i <= 90; i++)
+                            {
+                                GameObject Clear = GameObject.Find("prefabs" + i.ToString());
+                                Destroy(Clear);
+                            }
+                            can.ClickChess(FromX, FromY);
+                        }
+                        else
+                        {
+                            for (int i = 1; i <= 90; i++)
+                            {
+                                GameObject Clear = GameObject.Find("prefabs" + i.ToString());
+                                Destroy(Clear);
+                            }
+                            if (BlackName == null)
+                                return;
+                            ToX = x;
+                            ToY = y;
+                            bool ba = rules.IsValidMove(Board.chess, FromX, FromY, ToX, ToY);
+                            if (!ba)
+                                return;
+                            //ChessChongzhi chzh = new ChessChongzhi();
+                            int a = Board.chess[FromY, FromX];
+                            int b = Board.chess[ToY, ToX];
+                            chzh.AddChess(ChessChongzhi.Count, FromX, FromY, ToX, ToY, true, a, b);
+                            //看看是否能播放音乐
+                            IsEat(BlackName, RedName, FromX, FromY, ToX, ToY);
+                            RedName = null;
+                            BlackName = null;
+                            ChessMove = true;
+                            str = "红方走";
+                            KingPosition.JiangJunCheck();
+                        }
+                        break;
+
                 }
-                can.ClickChess(FromX,FromY);
-			}
-			else{
-                for (int i = 1; i <= 90; i++)
-                {
-                    GameObject Clear = GameObject.Find("prefabs" + i.ToString());
-                    Destroy(Clear);
-                }
-                if (RedName ==null)
-					return;
-				ToX = x;
-				ToY = y;
-				bool ba = rules.IsValidMove(Board.chess,FromX,FromY,ToX,ToY);
-				if(!ba)
-					return;
-				int a = Board.chess[FromY,FromX];
-				int b = Board.chess[ToY,ToX];
-				chzh.AddChess(ChessChongzhi.Count,FromX,FromY,ToX,ToY,true,a,b);
-				//看看是否能播放音乐
-				IsEat(RedName,BlackName,FromX,FromY,ToX,ToY);
-				ChessMove = false;
-				//红色吃子  变黑色走
-				str="黑方走";
-				KingPosition.JiangJunCheck();
-				if(str=="红色棋子胜利")
-					return ;//因为没有携程关系  每次进入黑色走棋的时候都判断 棋局是否结束
-                RedName=null;
-				BlackName=null;
-				return;
-			}
-			break;
-		case 2://点击到了红色   是否选中  还是黑色要吃子
-			if(ChessMove){
-				FromX=x;
-				FromY = y;
-                for (int i = 1; i <= 90; i++)
-                {
-                    GameObject Clear = GameObject.Find("prefabs" + i.ToString());
-                    Destroy(Clear);
-                }
-                can.ClickChess(FromX,FromY);
-			}
-			else{
-                for (int i = 1; i <= 90; i++)
-                {
-                    GameObject Clear = GameObject.Find("prefabs" + i.ToString());
-                    Destroy(Clear);
-                }
-                if (BlackName==null)
-					return;
-				ToX = x;
-				ToY = y;
-				bool ba = rules.IsValidMove(Board.chess,FromX,FromY,ToX,ToY);
-				if(!ba)
-					return;
-				//ChessChongzhi chzh = new ChessChongzhi();
-				int a = Board.chess[FromY,FromX];
-				int b = Board.chess[ToY,ToX];
-				chzh.AddChess(ChessChongzhi.Count,FromX,FromY,ToX,ToY,true,a,b);
-				//看看是否能播放音乐
-				IsEat(BlackName,RedName,FromX,FromY,ToX,ToY);
-				RedName = null;
-				BlackName = null;
-				ChessMove = true;
-				str="红方走";
-				KingPosition.JiangJunCheck();
-			}
-			break;
-	
-		}
+            }
+        }
 	
 	}
 }

@@ -18,6 +18,7 @@ public class Board : MonoBehaviour {
         {9,10,13,12,8,12,13,10,9}
 
     };
+
     public static bool start = true;
     
     public void text()
