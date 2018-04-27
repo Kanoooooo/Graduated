@@ -97,6 +97,10 @@ public class KingPosition : MonoBehaviour {
                     case 3:
                     case 4:
                     case 7:
+                        BOL = rules.IsValidMove(Board.chess, i, j, Shuai_x, Shuai_y);
+                        if (BOL)
+                            blackclick.str = "将军";
+                        break;
                     case 9:
                     case 10:
                     case 11:

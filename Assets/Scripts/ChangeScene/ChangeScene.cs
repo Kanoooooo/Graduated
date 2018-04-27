@@ -33,12 +33,14 @@ public class ChangeScene : MonoBehaviour {
     //点击登录按钮
     void Login(GameObject button)
     {
-        //联机对战
+        //单人游戏
+        blackclick.bIsOnline = false;
         SceneManager.LoadScene("ChessDouble");
     }
-    //点击单人游戏按钮
+    //点击联机游戏按钮
     void StandAlone(GameObject button)
     {
+        blackclick.bIsOnline = true;
         SceneManager.LoadScene("ChessAlone");
     }
     //点击退出游戏按钮

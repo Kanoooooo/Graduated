@@ -9,11 +9,15 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
+    //public UILabel uil;
+
     //申请悔棋按钮
     public GameObject GoBackButton;
     public GameObject GoBackText;
     //悔棋脚本
     public ChessChongzhi CC;
+    //计时器
+    TimeManager TM;
 
     public static string nickname;
 
@@ -25,6 +29,27 @@ public class GameManager : MonoBehaviour {
     // getInt("client-index") == 1 为黑方
     public static string userColor;
 
+    bool bRegame = false;
+    private void Update()
+    {
+        //双方再开一局时重新计时
+        if(bRegame)
+        {
+            // 如果没有重开UI
+            GameObject ui = GameObject.Find("UI");
+            GameObject resultObj = ui.transform.Find("Result").gameObject;
+            if (resultObj.activeSelf == false)
+            {
+                //开始计时
+                TM.bStartCul = true;
+                TM.Timer.value = 1;
+                TM.bGameOver = false;
+                bRegame = false;
+            }
+            return;
+        }
+    }
+
 
     void Awake() {
         curTurn = "Red";
@@ -32,13 +57,14 @@ public class GameManager : MonoBehaviour {
 
 	void Start() {
 
-
-	}
+        GameObject obj = GameObject.Find("Timer") as GameObject;
+        TM = obj.GetComponent<TimeManager>();
+    }
 
 	// 
 	public void updateChess() {
 
-        // 检查胜负
+        // 胜利
         if (blackclick.str == "红色方胜利"|| blackclick.str == "黑色方胜利")
         {
             // 结果通知给对方
@@ -51,6 +77,28 @@ public class GameManager : MonoBehaviour {
             GameObject resultObj = ui.transform.Find("Result").gameObject;
             GameObject gameoverObj = resultObj.transform.Find("GameOver").gameObject;
             gameoverObj.GetComponentInChildren<Text>().text = "完胜";
+
+            TM.bStartCul = false;
+            TM.Timer.value = 1;
+
+            resultObj.SetActive(true);
+        }
+        // 超时失败
+        if (TM.bGameOver)
+        {
+            // 结果通知给对方
+            Hashtable values = new Hashtable();
+            values.Add("name", "lose");
+            values.Add("v", (byte)2);
+            GobangClient.send(GameSerialize.toBytes(values));
+            // UI
+            GameObject ui = GameObject.Find("UI");
+            GameObject resultObj = ui.transform.Find("Result").gameObject;
+            GameObject gameoverObj = resultObj.transform.Find("GameOver").gameObject;
+            gameoverObj.GetComponentInChildren<Text>().text = "超时失败";
+
+            TM.bStartCul = false;
+            TM.Timer.value = 1;
 
             resultObj.SetActive(true);
         }
@@ -70,9 +118,24 @@ public class GameManager : MonoBehaviour {
 				else
 					theChess = "黑方";
 
+                //设置名称
                 GameObject Enemy = GameObject.Find("EnemyName");
                 UILabel label = Enemy.GetComponent<UILabel>();
                 label.text = values["v"] + " (" + theChess + ")";
+                //设置头像
+                GameObject EnemyPicture = GameObject.Find("EnemyPic");
+                //string EnemyPic = (string)values["ImgStr"];
+                //if(EnemyPic!="wu")
+                //{
+                //        uil.text = "联机成功";
+                //        //设置头像
+                //        SpriteRenderer m_srSR = EnemyPicture.GetComponent<SpriteRenderer>();
+                //    Texture2D img = new Texture2D(1024,1024);
+                //    byte[] data = System.Convert.FromBase64String(EnemyPic);
+                //    img.LoadImage(data);
+                //    Sprite sp = Sprite.Create(img, new Rect(0, 0, img.width, img.height), new Vector2(0.0f, 0.0f));
+                //    m_srSR.sprite = sp;
+                //}
 			}
 			break;
 
@@ -93,15 +156,22 @@ public class GameManager : MonoBehaviour {
                         GameObject start = GameObject.Find("Start") as GameObject;
                         ReGame RG = start.GetComponent<ReGame>();
                         RG.ChessPostion();
+                        bRegame = true;
                         return;
                     }
-                    //申请悔棋
+                    //拒绝悔棋
                     if(GoBack == 0)
                     {
                         GoBackText.SetActive(false);
                     }
-                    if(GoBack == 1)
+                    //接收到申请悔棋
+                    if (GoBack == 1)
                     {
+                        //接受到悔棋申请暂停计时
+                        TimeManager TM;
+                        GameObject obj = GameObject.Find("Timer") as GameObject;
+                        TM = obj.GetComponent<TimeManager>();
+                        TM.bStartCul = false;
                         GoBackButton.SetActive(true);
                         return;
                     }
@@ -171,17 +241,29 @@ public class GameManager : MonoBehaviour {
 		// gameover
 		case "lose":
 			{
+                byte V = (Byte)values["v"];
                 // gameover
                 blackclick.TrueOrFalse = false;
 
-				// UI
-				GameObject ui = GameObject.Find("UI");
+                //停止计时
+                TM.bStartCul = false;
+                TM.Timer.value = 1;
+
+                // UI
+                GameObject ui = GameObject.Find("UI");
 
 				GameObject resultObj = ui.transform.Find ("Result").gameObject;
 				GameObject gameoverObj = resultObj.transform.Find ("GameOver").gameObject;
-				gameoverObj.GetComponentInChildren<Text> () .text = "惜败";
-                resultObj.SetActive(true);
+                if((int)V == 1)
+                {
+                    gameoverObj.GetComponentInChildren<Text>().text = "惜败";
                 }
+                if ((int)V == 2)
+                {
+                    gameoverObj.GetComponentInChildren<Text>().text = "对方超时，胜利";
+                }
+                    resultObj.SetActive(true);
+            }
 			break;
 
 		default:

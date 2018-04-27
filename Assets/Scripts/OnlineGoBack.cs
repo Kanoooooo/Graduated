@@ -11,28 +11,32 @@ public class OnlineGoBack : MonoBehaviour {
 
     public void RequestGoBack()
     {
-        //发送请求
-        Hashtable values = new Hashtable();
-        values.Add("name", "piece");
-        values.Add("FromX", -1);
-        values.Add("FromY", -1);
-        values.Add("ToX", -1);
-        values.Add("ToY", -1);
-        values.Add("Move", "str");
-        values.Add("YidongOrChizi", "YidongOrChizi");
-        values.Add("Regame", 0);
-        values.Add("GoBack", 1);//申请悔棋，0不申请不同意，1申请，2同意
+        //己方落子对方未落子时可以申请悔棋
+        if(GameManager.curTurn != GameManager.userColor)
+        {
+            //发送请求
+            Hashtable values = new Hashtable();
+            values.Add("name", "piece");
+            values.Add("FromX", -1);
+            values.Add("FromY", -1);
+            values.Add("ToX", -1);
+            values.Add("ToY", -1);
+            values.Add("Move", "str");
+            values.Add("YidongOrChizi", "YidongOrChizi");
+            values.Add("Regame", 0);
+            values.Add("GoBack", 1);//申请悔棋，0不申请不同意，1申请，2同意
 
-        Label.gameObject.SetActive(true);
-        Label.text = "对方考虑中...";
+            Label.gameObject.SetActive(true);
+            Label.text = "对方考虑中...";
 
-        GobangClient.send(GameSerialize.toBytes(values));
+            GobangClient.send(GameSerialize.toBytes(values));
+        }
     }
 
     //同意悔棋
     public void Agree()
     {
-        //发送请求
+        //发送回答
         Hashtable values = new Hashtable();
         values.Add("name", "piece");
         values.Add("FromX", -1);
@@ -55,12 +59,19 @@ public class OnlineGoBack : MonoBehaviour {
         GobangClient.send(GameSerialize.toBytes(values));
         CC.IloveHUIQI();
         gameObject.transform.parent.gameObject.SetActive(false);
+
+        //同意悔棋重置计时
+        TimeManager TM;
+        GameObject obj = GameObject.Find("Timer") as GameObject;
+        TM = obj.GetComponent<TimeManager>();
+        TM.bStartCul = true;
+        TM.Timer.value = 1;
     }
 
     //拒绝悔棋
     public void DisAgree()
-    {     
-        //发送请求
+    {
+        //发送回答
         Hashtable values = new Hashtable();
         values.Add("name", "piece");
         values.Add("FromX", -1);
@@ -74,5 +85,11 @@ public class OnlineGoBack : MonoBehaviour {
 
         GobangClient.send(GameSerialize.toBytes(values));
         gameObject.transform.parent.gameObject.SetActive(false);
+
+        //拒绝悔棋开始计时
+        TimeManager TM;
+        GameObject obj = GameObject.Find("Timer") as GameObject;
+        TM = obj.GetComponent<TimeManager>();
+        TM.bStartCul = true;
     }
 }

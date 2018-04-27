@@ -12,8 +12,9 @@ public class blackclick : MonoBehaviour {
     public static string YidongOrChizi;
 	rules re = new rules ();
 
-    public static bool bIsOnline = true;//是否为联机状态
+    public static bool bIsOnline = false;//是否为联机状态
     GameManager Game;
+    TimeManager TM;
 
     //public UIToggle tog;
     //public Blackmove.CHESSMOVE chere;
@@ -23,9 +24,16 @@ public class blackclick : MonoBehaviour {
 
     private void Awake()
     {
-        //获得gamemanager
-        GameObject obj = GameObject.Find("Game") as GameObject;
-        Game = obj.GetComponent<GameManager>();
+        if(bIsOnline)
+        {
+            //获得gamemanager
+            GameObject obj = GameObject.Find("Game") as GameObject;
+            Game = obj.GetComponent<GameManager>();
+            //获得计时器
+            GameObject obj2 = GameObject.Find("Timer") as GameObject;
+            TM = obj2.GetComponent<TimeManager>();
+        }
+
     }
 
     void Start () {
@@ -393,6 +401,8 @@ public class blackclick : MonoBehaviour {
 
     public void SendEatMessage(int x1, int y1, int x2, int y2)
     {
+        //停止计时
+        TM.StopTime();
         YidongOrChizi = "Chizi";
         if ((GameManager.curTurn == GameManager.userColor) && TrueOrFalse)
         {
@@ -427,6 +437,8 @@ public class blackclick : MonoBehaviour {
     }
     public void SendMoveMessage(int x1, int y1, int x2, int y2)
     {
+        //停止计时
+        TM.StopTime();
         YidongOrChizi = "Yidong";
         if ((GameManager.curTurn == GameManager.userColor) && TrueOrFalse)
         {

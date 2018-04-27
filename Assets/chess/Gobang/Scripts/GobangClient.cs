@@ -32,11 +32,12 @@ public class GobangClient : NanoClient {
 		{
 			Debug.Log(GameManager.nickname);
 
-			// 交换名字，握手
+			// 交换名字，头像，握手
 			{
 				Hashtable values = new Hashtable ();
 				values.Add ("name", "handshake");
 				values.Add ("v", GameManager.nickname);
+                values.Add("ImgStr", HeadManager.ImgStr);
 
 				GobangClient.send (GameSerialize.toBytes (values));
 			}

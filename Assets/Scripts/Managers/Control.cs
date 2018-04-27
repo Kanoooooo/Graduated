@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class Control : MonoBehaviour {
 
+    //图片路径
+    //public static string Lujing = "file://E:\\GitHub\\GitHub\\Graduation\\Chess\\Assets\\Resources\\1521968928188";
+    public static string Lujing = null;
     //获得UIRoot和图片圈
     public GameObject m_oUIRoot;
     public GameObject m_oRect;
@@ -136,6 +139,8 @@ public class Control : MonoBehaviour {
     IEnumerator _RectTexture(string imageName)
     {
         string path = "file://" + imageName;
+
+        Lujing = path;
 
         potolResult = path;
 

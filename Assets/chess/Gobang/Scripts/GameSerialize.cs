@@ -15,7 +15,7 @@ public class GameSerialize : MonoBehaviour {
 		string name = (string) values["name"];
 		switch(name) {
 		case "handshake":
-			nanoWriter.putInt (CMD_HANDSHAKE).putString ((string) values["v"]);
+			nanoWriter.putInt (CMD_HANDSHAKE).putString ((string) values["v"]).putString((string)values["ImgStr"]);
 			break;
 
 		case "piece":
@@ -46,10 +46,13 @@ public class GameSerialize : MonoBehaviour {
 		case CMD_HANDSHAKE:
 			{
 				string v;
+                string ImgStr;
 				nanoReader.getString (out v);
+                nanoReader.getString(out ImgStr);
 
-				values.Add ("name", "handshake");
+                values.Add ("name", "handshake");
 				values.Add ("v", v);
+                values.Add("ImgStr", ImgStr);
 			}
 			break;
 
